@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fed-dash
+  namespace: federation-system
+  labels:
+    app: fed-dash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fed-dash
+  template:
+    metadata:
+      labels:
+        app: fed-dash
+    spec:
+      containers:
+        - image: thartland/fed-dash
+          name: fed-dash
+          imagePullPolicy: "Always"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fed-dash-service
+  namespace: federation-system
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: fed-dash
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fed-dash-ingress
+  namespace: federation-system
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.entryPoints: "http"
+spec:
+  rules:
+  - host: supercluster.cern.ch
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: fed-dash-service
+          servicePort: 8080
