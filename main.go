@@ -45,7 +45,7 @@ func getTable(w http.ResponseWriter, resource ResourceTable) {
 			table.Append(row)
 		}
 
-		if clusterIndex < numClusters-1 {
+		if clusterIndex < numClusters-1 && len(rows) > 0 {
 			table.Append(make([]string, len(resource.Headers())))
 		}
 	}
