@@ -30,7 +30,20 @@ func (jt JobTable) GetRowsFromCluster(clusterName string, config *rest.Config) (
 	}
 
 	for _, job := range jobs.Items {
-		rows = append(rows, []string{clusterName, job.ObjectMeta.Namespace, job.ObjectMeta.Name, fmt.Sprintf("%d", *job.Spec.Parallelism), fmt.Sprintf("%d", job.Spec.Completions), fmt.Sprintf("%d", job.Status.Active), fmt.Sprintf("%d", job.Status.Succeeded), fmt.Sprintf("%d", job.Status.Failed)})
+		ns := job.ObjectMeta.Namespace
+		name := job.ObjectMeta.Name
+		parallelism := "0"
+		if job.Spec.Parallelism != nil {
+			parallelism = fmt.Sprintf("%d", *job.Spec.Parallelism)
+		}
+		completions := "0"
+		if job.Spec.Completions != nil {
+			completions = fmt.Sprintf("%d", *job.Spec.Completions)
+		}
+		active := fmt.Sprintf("%d", job.Status.Active)
+		succeeded := fmt.Sprintf("%d", job.Status.Succeeded)
+		failed := fmt.Sprintf("%d", job.Status.Failed)
+		rows = append(rows, []string{clusterName, ns, name, parallelism, completions, active, succeeded, failed})
 	}
 
 	return rows, nil
