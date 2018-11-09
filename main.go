@@ -17,16 +17,19 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "Go to /deployments /pods or /jobs") })
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Go to /deployments /pods, /jobs or /configmaps")
+	})
 	http.HandleFunc("/deployments", func(w http.ResponseWriter, r *http.Request) { getTable(w, DeploymentTable{}) })
 	http.HandleFunc("/pods", func(w http.ResponseWriter, r *http.Request) { getTable(w, PodTable{}) })
 	http.HandleFunc("/jobs", func(w http.ResponseWriter, r *http.Request) { getTable(w, JobTable{}) })
+	http.HandleFunc("/configmaps", func(w http.ResponseWriter, r *http.Request) { getTable(w, ConfigMapTable{}) })
 	http.ListenAndServe(":8080", nil)
 	fmt.Println("Done")
 }
 
 func getTable(w http.ResponseWriter, resource ResourceTable) {
-	fmt.Fprint(w, "Current pages: /deployments, /pods, /jobs\n\n")
+	fmt.Fprint(w, "Current pages: /deployments, /pods, /jobs, /configmaps\n\n")
 	table := tablewriter.NewWriter(w)
 	table.SetHeader(resource.Headers())
 	clusterConfigs, err := getClusterConfigs()
